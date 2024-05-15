@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <Layout>
       <div className='gap-5 flex flex-col'>
-        <div className="text-lg text-gray-800">Welcome to the applciation!</div>
+        <div className="text-lg text-gray-800">Welcome to the application!</div>
         <TextButton onClick={logout}>Logout</TextButton>
       </div>
     </Layout>

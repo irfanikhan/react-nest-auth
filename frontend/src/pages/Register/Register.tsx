@@ -2,7 +2,10 @@ import Button from "components/Button/Button";
 import InputField from "components/Input/Input";
 import Layout from "components/Layout/Layout";
 import TextButton from "components/TextButton/TextButton";
+import useAuth from "context/useAuth";
+import { post } from "httpRequests";
 import { useForm } from "react-hook-form";
+import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 
 interface FormInput {
@@ -19,7 +22,16 @@ const passwordErrorMap = {
 };
 
 const Register = () => {
+  const { signup } = useAuth();
   const navigate = useNavigate();
+
+  const { mutate, isLoading } = useMutation({
+    mutationFn: async (data: FormInput) => {
+      const response = await post("auth/signup", data);
+      signup(response.data.access_token);
+      return response;
+    },
+  });
 
   const {
     register,
@@ -28,9 +40,9 @@ const Register = () => {
   } = useForm<FormInput>();
 
   const onSubmit = (data: FormInput) => {
-    console.log(data);
+    mutate(data);
   };
-
+  
   return (
     <Layout>
       <div className="w-1/3">
@@ -60,7 +72,7 @@ const Register = () => {
               {...register("password", {
                 required: true,
                 pattern:
-                /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$#!%%*?&])[A-Za-z\d@#%$!%*?&]{8,}$/,
+                  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$#!%%*?&])[A-Za-z\d@#%$!%*?&]{8,}$/,
                 minLength: 8,
               })}
             />
@@ -75,7 +87,9 @@ const Register = () => {
                 Sign in
               </TextButton>
             </div>
-            <Button type="submit">Sign up</Button>
+            <Button type="submit" disabled={isLoading}>
+              Sign up
+            </Button>
           </div>
         </form>
       </div>
